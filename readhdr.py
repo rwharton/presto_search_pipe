@@ -29,7 +29,7 @@ def psrfits_samp(flist):
     start_MJD    = np.zeros(len(fitslist))
     for ii, fl in enumerate(fitslist):
         hdus = fits.open(fl, mode='readonly')
-        print ii, fl
+        print(ii, fl)
         
         # Go to primary HDU
         primary = hdus['PRIMARY'].header
@@ -55,14 +55,14 @@ def psrfits_samp(flist):
         
         # Identify the OFFS_SUB column number
         if 'OFFS_SUB' not in subint_hdu.columns.names:
-            print "Can't find the 'OFFS_SUB' column!"
+            print("Can't find the 'OFFS_SUB' column!")
             sys.exit(0)
         else:
             colnum = subint_hdu.columns.names.index('OFFS_SUB')
             if ii==0:
                 offs_sub_col = colnum 
             elif offs_sub_col != colnum:
-                print "'OFFS_SUB' column changes between files 0 and %d!" % ii
+                print("'OFFS_SUB' column changes between files 0 and %d!" % ii)
                 sys.exit(0)
 
             # Read the OFFS_SUB column value for the 1st row
@@ -71,10 +71,10 @@ def psrfits_samp(flist):
                               time_per_subint + 1e-7)
             # Check to see if any rows have been deleted or are missing
             if numrows > start_subint[ii]:
-                print "Warning: NSUBOFFS reports %d previous rows\n" \
+                print("Warning: NSUBOFFS reports %d previous rows\n" \
                     "         but OFFS_SUB implies %s. Using OFFS_SUB.\n" \
                     "         Will likely be able to correct for this.\n" % \
-                    (start_subint[ii], numrows)
+                    (start_subint[ii], numrows))
             start_subint[ii] = numrows
 
         # This is the MJD offset based on the starting subint number
@@ -83,7 +83,7 @@ def psrfits_samp(flist):
         start_MJD[ii] += MJDf
         MJDf = start_MJD[ii] - start_MJD[0]
         if MJDf < 0.0:
-            print "File %d seems to be from before file 0!" % ii
+            print("File %d seems to be from before file 0!" % ii)
             sys.exit(0)
         
         start_spec[ii] = (MJDf * psr_utils.SECPERDAY / dt + 0.5)
@@ -114,7 +114,7 @@ def fb_samp(flist):
     fillist = flist
     
     if len(fillist) > 1:
-        print "Currently can handle only one .fil file"
+        print("Currently can handle only one .fil file")
         sys.exit(0)
     
     fil_filenm = fillist[0]
@@ -122,7 +122,7 @@ def fb_samp(flist):
     n_samp = sigproc.samples_per_file(fil_filenm, filhdr, hdrlen)
     
     return n_samp
-        
+
 
 def get_samples(flist, dat_format):
     """
@@ -153,7 +153,75 @@ def get_samples(flist, dat_format):
 
     # The rest are (currently) out of luck...
     else:
-        print "Data type %s currently unsupported\n" %dat_type
+        print("Data type %s currently unsupported\n" %dat_type)
         sys.exit(0)
         
     return n_samp
+
+
+
+
+def psrfits_nchan(flist):
+    """
+    Get number of channels from list of PSRFITS files
+    """
+    fitsfile = flist[0]
+    hdus = fits.open(fitsfile, mode='readonly')
+    nchan = hdus['PRIMARY'].header.get('OBSNCHAN')
+    if nchan is None:
+        print("OBSNCHAN not found!")
+    else: pass
+    hdus.close()
+    return nchan
+
+
+def fb_nchan(flist):
+    """
+    Get number of channels from SIGPROC filterbank file
+    """
+    fillist = flist
+    
+    if len(fillist) > 1:
+        print("Currently can handle only one .fil file")
+        sys.exit(0)
+    
+    fil_filenm = fillist[0]
+    filhdr, hdrlen = sigproc.read_header(fil_filenm)
+    nchan = filhdr.get('nchans')
+    
+    if nchan is None:
+        print("NCHANS not found!")
+    else: pass
+    
+    return nchan
+        
+
+def get_nchan(flist, dat_format):
+    """
+    Get the number of frequency channels from psrfits or 
+    SIGPROC filterbank data formats.
+
+    Arguments are the file list and the 
+    data format.  Currently accepted data formats
+    are: 
+        - psrfits
+        - filterbank
+    """
+    # Put dat_format in lowercase, just to be safe
+    dat_format = dat_format.lower()
+    
+    # PSRFITS
+    if (dat_format == 'psrfits'):
+        nchan = psrfits_nchan(flist)
+        
+    # SIGPROC Filterbank
+    elif (dat_format == 'filterbank'):
+        nchan = fb_nchan(flist)
+
+    # The rest are (currently) out of luck...
+    else:
+        print("Data type %s currently unsupported\n" %dat_type)
+        sys.exit(0)
+        
+    return nchan
+
