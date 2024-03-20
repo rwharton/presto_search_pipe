@@ -231,8 +231,7 @@ def run_prepsubband(basename, maskname, fitslist, dmlow=params.dmlow, \
 
 def multi_call_prepsubband(basename, maskname, fitslist, dmlow=params.dmlow, \
                                ddm=params.ddm, downsample=params.downsample, \
-                               dmcalls=params.dmcalls, nsub=params.nsub,  \
-                               dsubDM=params.dsubDM, \
+                               dmcalls=params.dmcalls, dsubDM=params.dsubDM, \
                                dmspercall=params.dmspercall):
     t_prep_start = time.time()
     fitsfiles = ' '.join(fitslist)
@@ -240,6 +239,9 @@ def multi_call_prepsubband(basename, maskname, fitslist, dmlow=params.dmlow, \
     orig_N = readhdr.get_samples(fitslist, params.dat_type)
     numout = psr_utils.choose_N(orig_N)
     other_flags = params.prep_otherflags
+
+    # Set nsub = number of channels
+    nsub = readhdr.get_nchan(fitslist, params.dat_type)
 
     # Downsample organization as in PRESTO dedisp.py (why?)
     sub_downsample = downsample / 2

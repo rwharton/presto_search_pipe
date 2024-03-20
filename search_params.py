@@ -31,10 +31,10 @@ rfi_otherflags = '-ncpus 8 ' #'-ncpus 8 -zapchan 512:704 -noweights ' #
 # Dedispersion parameters
 # NOTE: Will do multi-pass sub-band dedispersion
 #       if and only if dmcalls > 1
-dmlow = 20 
-ddm   = 10
+dmlow = 10 #20 
+ddm   = 10 #10
 dmcalls    = 1
-dmspercall = 200   # 250
+dmspercall = 20 # 200
 #nsub no longer needed, will use nchan
 dsubDM     = 0.0
 downsample = 1
