@@ -47,5 +47,23 @@ of the search.  We can decide which steps to do:
 where there will be some check to make sure the requested steps 
 can be done.
 
+You can also set the dedispersion parameters:
 
+    # Dedispersion parameters
+    # NOTE: Will do multi-pass sub-band dedispersion
+    #       if and only if dmcalls > 1
+    dmlow = 10 
+    ddm   = 10
+    dmcalls    = 1
+    dmspercall = 20 
+    #nsub no longer needed, will use nchan
+    dsubDM     = 0.0
+    downsample = 1
+    prep_otherflags = '-ncpus 8 -noweights ' # other flags for prepsubband
 
+where in this case we will take 20 trial DMs from `dmlow = 10` to 
+200 in steps of `ddm = 10`.
+
+You can also change the parameters used in the rfifind step and the 
+acceleration search, but you probably don't need to change them.
+    
