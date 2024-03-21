@@ -32,6 +32,20 @@ The results directory will be created if it doesn't already exist.
 
 ## Parameter File
 
+The parameter file `search_params.py` is how we set the parameters 
+of the search.  We can decide which steps to do:
+
+    # Processing steps to do
+    do_rfifind    = 1      # Run PRESTO rfifind and generate a mask
+    do_prepsub    = 1      # Run PRESTO prepsubband dedispersion
+    do_fft        = 1      # FFT *dat files before accelsearch
+    do_zap        = 0      # Zap the *fft files
+    do_candsearch = 1      # Run PRESTO accelsearch on the data
+    do_presto_sp  = 1      # Run PRESTO singlepulse.py
+    do_param_cp   = 0      # copy parameter file to output directory 
+
+where there will be some check to make sure the requested steps 
+can be done.
 
 
 
